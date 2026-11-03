@@ -1,10 +1,12 @@
-// Where each game's files come from: the latest release of that game's own GitHub repository. The launcher downloads
+// Where each game's files come from: the latest release of that game's own GitHub repository. A launcher built from a
+// fork (LauncherRepository, set by tools/publish.py) uses that owner's fork of a game when it has a release, else the
+// game's original repository. The launcher downloads
 // the release's files into a cache, checks them against the SHA-256 sums the release publishes, and lays them out as the
 // payload folder Installer expects (apworld, ASI\<bridge>, <ModFolder>\<DlcName>, optional bink2w64.dll and options.json).
 //
 // Releases are read as published, so older layouts work unchanged:
 //   - a "*payload*.zip" link: only that file is downloaded (already in the payload layout);
-//   - otherwise every .apworld / .zip / .asi / .dll asset; bundled setup apps are skipped.
+//   - otherwise every .apworld / .zip / .asi / .dll asset and an options*.json schema; bundled setup apps are skipped.
 // The payload is then assembled by file and folder name, so it does not matter which zip a part came in.
 using System.IO.Compression;
 using System.Net.Http;
@@ -26,14 +28,38 @@ sealed class ReleaseInfo
 
 static partial class Releases
 {
-    public const string LauncherProject = "Mass-Effect-LE-Archipelago/ME-Archipelago-Launcher";
+    const string OriginalLauncher = "Mass-Effect-LE-Archipelago/ME-Archipelago-Launcher";
 
+    // The repository this launcher was built from (assembly metadata LauncherRepository, see the csproj).
+    public static readonly string LauncherProject =
+        typeof(Releases).Assembly.GetCustomAttributes(typeof(System.Reflection.AssemblyMetadataAttribute), false)
+            .Cast<System.Reflection.AssemblyMetadataAttribute>()
+            .FirstOrDefault(a => a.Key == "LauncherRepository" && !string.IsNullOrWhiteSpace(a.Value))?.Value ?? OriginalLauncher;
+
+    // Each game's repository; ResolveProjects replaces an entry with the launcher owner's fork when that has a release.
     public static readonly Dictionary<string, string> Projects = new()
     {
         ["ME1"] = "Mass-Effect-LE-Archipelago/ME1-APWorld",
         ["ME2"] = "Mass-Effect-LE-Archipelago/ME2-APWorld",
         ["ME3"] = "Mass-Effect-LE-Archipelago/ME3-AP-World",
     };
+
+    static Task _resolved;
+
+    // Points each game at <launcher owner>/<repository name> when that repository has a release (once per run).
+    public static Task ResolveProjects() => _resolved ??= ResolveForks();
+
+    static async Task ResolveForks()
+    {
+        var owner = LauncherProject.Split('/')[0];
+        if (owner.Equals(OriginalLauncher.Split('/')[0], StringComparison.OrdinalIgnoreCase)) return;
+        foreach (var (id, project) in Projects.ToList())
+        {
+            var fork = owner + "/" + project.Split('/')[1];
+            try { if (await Latest(fork) != null) Projects[id] = fork; }
+            catch (Exception) { }   // no fork (404), or GitHub unreachable: the original repository
+        }
+    }
 
     public static string ProjectUrl(string project) => "https://github.com/" + project;
 
@@ -111,7 +137,9 @@ static partial class Releases
                                                 && a.Name.EndsWith(".zip", StringComparison.OrdinalIgnoreCase)).ToList();
         if (payload.Count > 0) return payload;
         string[] wanted = [".apworld", ".zip", ".asi", ".dll"];
-        return release.Assets.Where(a => wanted.Any(e => a.Name.EndsWith(e, StringComparison.OrdinalIgnoreCase))
+        bool Schema(ReleaseAsset a) => a.Name.StartsWith("options", StringComparison.OrdinalIgnoreCase)
+                                       && a.Name.EndsWith(".json", StringComparison.OrdinalIgnoreCase);
+        return release.Assets.Where(a => (wanted.Any(e => a.Name.EndsWith(e, StringComparison.OrdinalIgnoreCase)) || Schema(a))
                                          && !a.Name.Contains("Setup", StringComparison.OrdinalIgnoreCase)).ToList();
     }
 

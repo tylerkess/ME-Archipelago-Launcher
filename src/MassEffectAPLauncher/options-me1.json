@@ -1,6 +1,6 @@
 {
  "game": "Mass Effect Legendary Edition 1",
- "world_version": "0.2.5",
+ "world_version": "0.2.6",
  "minimum_ap_version": "0.6.8",
  "groups": [
   {
@@ -124,6 +124,13 @@
       "filler_only",
       "any_item"
      ]
+    },
+    {
+     "key": "ilos_useful_items",
+     "display": "Gear on Ilos",
+     "doc": "Landing on Ilos starts the finale, with no way back. Ilos never holds this game's progression items (other\ngames' items can be there).\n\nOn: Ilos can hold this game's gear and upgrades. Off: only filler and other games' items.",
+     "type": "toggle",
+     "default": true
     },
     {
      "key": "shop_slots",

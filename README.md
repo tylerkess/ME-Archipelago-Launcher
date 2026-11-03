@@ -12,13 +12,16 @@ with backups, writes your player options, and starts the game with its Archipela
 | Mass Effect 2 | [ME2-APWorld](https://github.com/Mass-Effect-LE-Archipelago/ME2-APWorld) |
 | Mass Effect 3 | [ME3-AP-World](https://github.com/Mass-Effect-LE-Archipelago/ME3-AP-World) |
 
+A launcher built from a fork of this repository uses its owner's fork of a game (same repository name) when that fork
+has a release, and the project above otherwise.
+
 This is an unofficial fan project. It is not affiliated with or endorsed by BioWare or Electronic Arts, and it contains
 no game assets. The art and effects are drawn in code. You need your own copy of Mass Effect Legendary Edition (PC).
 
 ## Use it
 
 1. Install [Archipelago](https://github.com/ArchipelagoMW/Archipelago/releases) 0.6.8 or newer.
-2. Download `Mass-Effect-Archipelago-Launcher.exe` from [Releases](https://github.com/Mass-Effect-LE-Archipelago/ME-Archipelago-Launcher/releases)
+2. Download `Mass-Effect-Archipelago-Launcher.exe` from [Releases](../../releases)
    and run it. Nothing else needs to be installed: the launcher is self-contained.
 3. Pick a campaign on the left.
    - **Deploy**: downloads the game's newest release (checked against its SHA-256) and installs it. Anything replaced is
@@ -47,7 +50,8 @@ The launcher reads the newest release of each game project through the GitHub AP
    bink2w64.dll                (ME2/ME3: the AP ASI Loader)
    options.json                (optional: the world's option schema, so Options matches that world version)
    ```
-2. otherwise every `.apworld`, `.zip`, `.asi` and `.dll` asset (setup apps are skipped), assembled by file and folder name.
+2. otherwise every `.apworld`, `.zip`, `.asi` and `.dll` asset and an `options*.json` schema (for example
+   `options-me1.json`; setup apps are skipped), assembled by file and folder name.
 
 SHA-256 sums come from a `SHA256SUMS` asset or a `SHA-256 of <file>: <hash>` line in the notes. Files without a sum are
 still installed and the log says so.
@@ -62,12 +66,21 @@ git clone https://github.com/ME3Tweaks/LegendaryExplorer.git vendor/LegendaryExp
 git -C vendor/LegendaryExplorer checkout bd5ec55
 dotnet build src/MassEffectAPLauncher -c Release
 python tests/test_launcher.py --rad-bink "<...>\Game\ME2\Binaries\Win64\bink2w64_original.dll"
-python tools/publish.py          # dist/Mass Effect Archipelago Launcher.exe + SHA256SUMS
+python tools/publish.py          # dist/Mass Effect Archipelago Launcher.exe + SHA256SUMS (records this repo, from git)
 ```
 
 The tests download each game's release and install it into scratch folders, never into a real game. The command
 line the tests use is listed at the top of `src/MassEffectAPLauncher/Program.cs`. `--screenshot <png> <game> <page>`
 renders the window for docs.
+
+## Credits
+
+- **Original launcher:** [ME-Archipelago-Launcher](https://github.com/Mass-Effect-LE-Archipelago/ME-Archipelago-Launcher)
+  by Jerrod (Unowa001).
+- **Modified by Tyler Kessler** (November 2026): the launcher uses its owner's fork of a game when that has releases,
+  and reads each release's option schema. Every change is in the git history.
+- [ME3Tweaks](https://me3tweaks.com): LegendaryExplorerCore (GPL-3.0), used for the LE1 and DLC file tables.
+- [Archipelago](https://archipelago.gg): the multiworld framework the launcher installs games for.
 
 ## License
 

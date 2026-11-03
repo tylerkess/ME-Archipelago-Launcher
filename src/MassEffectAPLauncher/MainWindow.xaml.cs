@@ -560,6 +560,7 @@ public partial class MainWindow : Window
 
     async Task CheckReleases()
     {
+        await Releases.ResolveProjects();
         await Task.WhenAll(_campaigns.Select(async c =>
         {
             try { c.Latest = await Releases.Latest(Releases.Projects[c.Profile.Id]); }

@@ -126,6 +126,7 @@ static class Program
             }
             case "--latest":
             {
+                Releases.ResolveProjects().GetAwaiter().GetResult();
                 var project = args[1].Equals("launcher", StringComparison.OrdinalIgnoreCase) ? Releases.LauncherProject : Releases.Projects[Profile(args[1]).Id];
                 var release = Releases.Latest(project).GetAwaiter().GetResult();
                 if (release == null) { Console.WriteLine($"{project}: no release yet"); return 1; }
@@ -137,6 +138,7 @@ static class Program
             }
             case "--fetch":
             {
+                Releases.ResolveProjects().GetAwaiter().GetResult();
                 var profile = Profile(args[1]);
                 var release = Releases.Latest(Releases.Projects[profile.Id]).GetAwaiter().GetResult()
                               ?? throw new InvalidOperationException($"{Releases.Projects[profile.Id]} has no release yet");

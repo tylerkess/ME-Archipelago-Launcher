@@ -20,6 +20,13 @@
     <LexCoreProject Condition="'$(LexCoreProject)' == '' And Exists('..\..\vendor\LegendaryExplorer')">..\..\vendor\LegendaryExplorer\LegendaryExplorer\LegendaryExplorerCore\LegendaryExplorerCore.csproj</LexCoreProject>
     <LexCoreProject Condition="'$(LexCoreProject)' == ''">..\..\..\vendor\LegendaryExplorer\LegendaryExplorer\LegendaryExplorerCore\LegendaryExplorerCore.csproj</LexCoreProject>
   </PropertyGroup>
+  <PropertyGroup>
+    <!-- The GitHub repository this launcher is built from (owner/name): tools/publish.py passes it from git -->
+    <LauncherRepository Condition="'$(LauncherRepository)' == ''">Mass-Effect-LE-Archipelago/ME-Archipelago-Launcher</LauncherRepository>
+  </PropertyGroup>
+  <ItemGroup>
+    <AssemblyMetadata Include="LauncherRepository" Value="$(LauncherRepository)" />
+  </ItemGroup>
   <ItemGroup>
     <!-- WPF leaves System.IO out of the implicit usings -->
     <Using Include="System.IO" />
