@@ -1,6 +1,6 @@
 {
  "game": "Mass Effect Legendary Edition 1",
- "world_version": "0.2.6",
+ "world_version": "0.2.7",
  "minimum_ap_version": "0.6.8",
  "groups": [
   {
@@ -117,12 +117,13 @@
     {
      "key": "finished_mission_checks",
      "display": "Finished Mission Checks",
-     "doc": "Therum and Virmire close for good once their mission is finished, so checks left behind there are lost.\n\nfiller_only: their containers and mission-only codex pages hold filler only, so nothing important can be lost.\nany_item: they can hold anything; collect everything on Therum and Virmire before finishing those missions.",
+     "doc": "Eden Prime, Therum, Virmire and Asteroid X57 close for good once their mission is finished, so checks left behind\nthere are lost. Feros and Noveria close in part: afterwards only Zhu's Hope and Port Hanshan can be revisited.\n\nno_progression: their containers and mission-only codex pages hold no progression items: this game's gear, upgrades\nand filler, and other games' filler. Leaving one behind can cost gear, never progress.\nfiller_only: they hold filler only, so nothing useful can be lost.\nany_item: they can hold anything; collect everything there before finishing those missions.",
      "type": "choice",
-     "default": "filler_only",
+     "default": "no_progression",
      "choices": [
       "filler_only",
-      "any_item"
+      "any_item",
+      "no_progression"
      ]
     },
     {
